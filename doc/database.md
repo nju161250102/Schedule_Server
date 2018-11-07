@@ -8,11 +8,11 @@
 |time|TIMESTAMP|截止时间|
 |title|VARCHAR(30)|标题|
 |detail|VARCHAR(150)|详细描述|
-|create_time|TIMESTAMP|创建时间|
+|create_time|TIMESTAMP|创建时间（默认当前时间）|
 |finish_time|TIMESTAMP|完成时间（未完成为null）|
-|week_flag|BOOLEAN|周提醒设置标记|
-|three_days_flag|BOOLEAN|三天提醒设置标记|
-|day_flag|BOOLEAN|日提醒设置标记|
+|week_flag|INT|周提醒消息Id（未设定为null）|
+|three_days_flag|INT|三天提醒消息Id（未设定为null）|
+|day_flag|INT|日提醒消息Id（未设定为null）|
 
 ### 消息表
 
@@ -20,5 +20,5 @@
 |:---|:---|:---|
 |id|INT|主键、自增|
 |content|VARCHAR(150)|消息内容|
-|time|TIMESTAMP|消息生成时间|
+|time|TIMESTAMP|消息时间|
 |read_flag|BOOLEAN|是否已读|
