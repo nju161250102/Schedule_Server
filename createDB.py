@@ -3,9 +3,9 @@ import sqlite3
 
 conn = sqlite3.connect('schedule.db')
 c = conn.cursor()
-c.execute("DROP TABLE IF EXISTS msg;")
+c.execute("DROP TABLE IF EXISTS message;")
 c.execute("""
-CREATE TABLE msg (
+CREATE TABLE message (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     content VARCHAR(150) NOT NULL,
     time DATETIME NOT NULL,
