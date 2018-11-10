@@ -20,11 +20,12 @@ class Deadline(BaseModel):
 
     """
     id = IntegerField(primary_key=True, sequence=True)
-    time = DateTimeField()
+    time = DateTimeField(formats="%Y-%m-%d %H:%M:%S")
     title = CharField(max_length=30)
     detail = CharField(max_length=150, default="")
-    create_time = DateTimeField(default=datetime.datetime.now())
-    finish_time = DateTimeField(default=None)
+    create_time = DateTimeField(default=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                formats="%Y-%m-%d %H:%M:%S")
+    finish_time = DateTimeField(default=None, formats="%Y-%m-%d %H:%M:%S")
     week_flag = IntegerField(default=None)
     three_days_flag = IntegerField(default=None)
     day_flag = IntegerField(default=None)
