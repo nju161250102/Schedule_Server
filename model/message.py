@@ -1,5 +1,5 @@
 # coding=utf-8
-from peewee import IntegerField, TimeField, CharField, BooleanField
+from peewee import IntegerField, TextField, CharField
 from .baseModel import BaseModel
 
 
@@ -14,7 +14,7 @@ class Message(BaseModel):
     """
     id = IntegerField(primary_key=True, sequence=True)
     content = CharField(max_length=150)
-    time = TimeField()
+    time = TextField()
 
     def __init__(self, content, time):
         BaseModel.__init__(self, content=content, time=time)
