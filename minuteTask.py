@@ -10,10 +10,9 @@ class MinuteTask(Task):
     def __init__(self, logger):
         # set the interval: 60 sec = 1 minute
         super().__init__(60, logger)
-        self.msg_service = MsgService()
 
     def _send_msg(self):
-        for msg in self.msg_service.get_msg():
+        for msg in MsgService.get_msg():
             post_data = {
                 "chat_id": USER_ID,
                 "text": msg["content"]
