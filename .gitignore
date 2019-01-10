@@ -4,4 +4,4 @@
 /templates
 /.vscode
 *.db
-/config.py
+/config.json

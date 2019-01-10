@@ -1,6 +1,7 @@
 import time
 import sched
 import logging
+from config import Config
 from dailyTask import DailyTask
 from minuteTask import MinuteTask
 
@@ -45,4 +46,5 @@ if __name__ == "__main__":
     s.enter(delay_minute(), 0, perform, (t2.run, t2.interval))
     # run
     logger.info("Started...")
+    Config.refresh()
     s.run()
