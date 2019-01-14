@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timedelta
 import sched
 import logging
 from config import Config
@@ -19,11 +20,10 @@ def delay_minute():
 
 def delay_day():
     # calculate delay to one day
-    localtime = time.localtime()
-    hour = int(time.strftime("%H", localtime))
-    minute = int(time.strftime("%M", localtime))
-    second = int(time.strftime("%S", localtime))
-    return (24 - hour - 1) * 3600 + (60 - minute - 1) * 60 + (60 - second)
+    now_time = datetime.now()
+    update_time = now_time.replace(hour=5, minute=0, second=0)
+    update_time += timedelta(days=1)
+    return (update_time - now_time).seconds
 
 
 if __name__ == "__main__":

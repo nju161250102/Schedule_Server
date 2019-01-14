@@ -8,7 +8,7 @@ class Task(object):
         self.logger = logger
 
     def run(self):
-        method_list = list(filter(lambda s: (s[0] == '_' and s[1] != '_'), self.__dir__()))
+        method_list = list(filter(lambda s: s[0] == 't', self.__dir__()))
         for method_name in method_list:
             method = getattr(self, method_name)
             method()

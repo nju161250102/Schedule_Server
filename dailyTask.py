@@ -14,7 +14,7 @@ class DailyTask(Task):
         # set the interval: 60*60*24 sec = 1 day
         super().__init__(60*60*24, logger)
 
-    def _get_lesson(self):
+    def t_get_lesson(self):
         lessons = LessonService.get_lessons()
         for lesson in lessons:
             text = "\n".join(["◈课程提醒◈", lesson["name"], lesson["classroom"]])
@@ -25,7 +25,7 @@ class DailyTask(Task):
                 self.logger.error("There are something wrong while importing lessons")
         self.logger.info("Today's Lessons saved to message")
 
-    def _get_weather(self):
+    def t_get_weather(self):
         city = Config.get("CITY_CODE")
         r = requests.get("http://t.weather.sojson.com/api/weather/city/" + city)
         data = json.loads(r.text, encoding="utf-8")
