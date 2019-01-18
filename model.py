@@ -38,10 +38,13 @@ class Lesson(BaseModel):
     time = TextField()
 
 
-class Deadline(BaseModel):
+class Plan(BaseModel):
 
     id = IntegerField(primary_key=True, sequence=True)
     time = DateTimeField(formats="%Y-%m-%d %H:%M:%S")
-    title = TextField()
     detail = TextField(default="")
-    finish_time = DateTimeField(default=None, formats="%Y-%m-%d %H:%M:%S")
+    create_time = DateTimeField(default=None, formats="%Y-%m-%d %H:%M:%S")
+    flag = IntegerField(default=3)
+
+    def __init__(self, text, priority):
+        BaseModel.__init__(self, detail=text, flag=priority)
