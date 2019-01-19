@@ -21,7 +21,7 @@ def delay_minute():
 def delay_day():
     # calculate delay to one day
     now_time = datetime.now()
-    update_time = now_time.replace(hour=5, minute=0, second=0)
+    update_time = now_time.replace(hour=6, minute=0, second=0)
     update_time += timedelta(days=1)
     return (update_time - now_time).seconds
 

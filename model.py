@@ -16,9 +16,6 @@ class Message(BaseModel):
     content = TextField()
     time = TextField()
 
-    def __init__(self, content, time):
-        BaseModel.__init__(self, content=content, time=time)
-
 
 class Term(BaseModel):
 
@@ -45,6 +42,3 @@ class Plan(BaseModel):
     detail = TextField(default="")
     create_time = DateTimeField(default=None, formats="%Y-%m-%d %H:%M:%S")
     flag = IntegerField(default=3)
-
-    def __init__(self, text, priority):
-        BaseModel.__init__(self, detail=text, flag=priority)

@@ -24,7 +24,7 @@ class MinuteTask(Task):
             }
             r = requests.post(Config.get("TOKEN_URL") + "sendMessage", data=post_data)
             if r.status_code == 200:
-                self.logger.info("Send Message: ID " + msg["id"])
+                self.logger.info("Send Message: ID " + str(msg["id"]))
 
     def t_remind(self):
         now_time = datetime.now().strftime("%H:%M")
@@ -34,7 +34,7 @@ class MinuteTask(Task):
             for plan in plan_list:
                 result.append("ID: %s\tTime: %s" % (plan["id"], plan["create_time"]))
                 result.append(plan["detail"])
-            MsgService.save("\n".join(result), self.next_minute())
+            MsgService.save("\n".join(result), self._next_minute())
 
     def t_get_msg(self):
         query_str = "" if self.offset is None else "?offset=" + str(self.offset)
@@ -46,22 +46,63 @@ class MinuteTask(Task):
                     msg = update_msg["message"]
                     if "entities" in msg.keys() and len(msg["entities"]) == 1:
                         length = msg["entities"][0]["length"]
-                        self.command = msg["text"][1:length]
+                        self.command = getattr(self, "_" + msg["text"][1:length])
                     elif "entities" not in msg.keys():
                         if self.command is not None:
-                            self._handle(self.command, msg["text"])
+                            self.command(msg["text"])
                             self.command = None
-                    self.offset = update_msg["update_id"]
+                    self.offset = update_msg["update_id"] + 1
+        requests.get(Config.get("TOKEN_URL") + "getUpdates?offset=" + str(self.offset))
 
-    def _handle(self, command, text: str):
-        if command == "todo":
-            split_index = text.index("\n")
-            priority = int(text[:split_index])
-            if PlanService.add_plan(text[split_index:], priority) != 0:
-                MsgService.save("已加入待办事项", self.next_minute())
+    def _todo(self, text: str):
+        if "\n" not in text:
+            return
+        split_index = text.index("\n")
+        priority = int(text[:split_index])
+        result = PlanService.add(text[split_index + 1:], priority)
+        if result != 0:
+            MsgService.save("待办事项（ID：%s）已加入" % str(result), self._next_minute())
+        else:
+            self.logger.error("待办事项保存失败")
+
+    def _finish(self, text: str):
+        array = text.split("\n")
+        ok_list = []
+        error_num = 0
+        for item in array:
+            if item.isdigit():
+                result = PlanService.finish(int(item))
             else:
-                self.logger.error("待办事项保存失败")
+                result = PlanService.add(item, PlanService.FINISHED)
+            if result:
+                ok_list.append(item)
+            else:
+                error_num += 1
+        if len(ok_list) == 0:
+            MsgService.save("完成确认失败", self._next_minute())
+        else:
+            MsgService.save("确认完成的计划ID：%s" % (", ".join(ok_list),), self._next_minute())
+        self.logger.info("完成计划ID：" + ", ".join(ok_list))
+        if error_num != 0:
+            self.logger.error("出现错误数目：" + str(error_num))
 
-    def next_minute(self):
+    def _delete(self, text: str):
+        array = text.split("\n")
+        ok_list = []
+        error_num = 0
+        for item in array:
+            if item.isdigit() and PlanService.delete(int(item)):
+                ok_list.append(item)
+            else:
+                error_num += 1
+        if len(ok_list) == 0:
+            MsgService.save("计划删除失败", self._next_minute())
+        else:
+            MsgService.save("删除成功的计划ID：%s" % (", ".join(ok_list),), self._next_minute())
+        self.logger.info("删除的ID：" + ", ".join(ok_list))
+        if error_num != 0:
+            self.logger.error("出现错误数目：" + str(error_num))
+
+    def _next_minute(self):
         new_time = datetime.now() + timedelta(minutes=1)
         return new_time.strftime("%Y-%m-%d %H:%M")

@@ -13,5 +13,7 @@ class MsgService(object):
 
     @staticmethod
     def save(content, msg_time):
-        msg = Message(content, msg_time)
+        msg = Message()
+        msg.content = content
+        msg.time = msg_time
         return msg.save()

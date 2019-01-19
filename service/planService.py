@@ -10,29 +10,35 @@ class PlanService(object):
     PRIORITY_MAX = 5
 
     @staticmethod
-    def add_plan(text, priority):
-        if priority < 0 or priority > 5:
-            priority = 1
-        plan = Plan(text, priority)
-        return plan.save()
+    def add(text, priority):
+        plan = Plan()
+        plan.detail = text
+        plan.flag = priority
+        if priority == PlanService.FINISHED:
+            now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            plan.time = now_time
+            plan.create_time = now_time
+        else:
+            if priority < 0 or priority > PlanService.PRIORITY_MAX:
+                plan.flag = 1
+        return plan.get_id() if plan.save() != 0 else 0
 
     @staticmethod
-    def finish_plan(plan_id):
-        plan = Plan.get_by_id(plan_id)
+    def update(plan_id, flag):
+        plan = Plan.get_or_none(Plan.id == plan_id)
         if plan is None:
-            return 0
+            return False
         plan.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        plan.flag = PlanService.FINISHED
-        return plan.save()
+        plan.flag = flag
+        return plan.save() != 0
 
     @staticmethod
-    def delete_plan(plan_id):
-        plan = Plan.get_by_id(plan_id)
-        if plan is None:
-            return 0
-        plan.time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        plan.flag = PlanService.DELETED
-        return plan.save()
+    def finish(plan_id):
+        return PlanService.update(plan_id, PlanService.FINISHED)
+
+    @staticmethod
+    def delete(plan_id):
+        return PlanService.update(plan_id, PlanService.DELETED)
 
     @staticmethod
     def todo_list():
